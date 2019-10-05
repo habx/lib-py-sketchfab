@@ -4,3 +4,4 @@ dist/
 build/
 html/
 sketchfab.egg-info/
+__pycache__
