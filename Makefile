@@ -13,8 +13,8 @@ doc-server:
 	pdoc3 --http localhost:8080 sketchfab
 
 $(PACKAGE_FILES): $(PY_FILES)
+	rm -Rf dist build
 	python3 setup.py sdist bdist_wheel
-	touch dist build
 
 package: $(PACKAGE_FILES)
 
