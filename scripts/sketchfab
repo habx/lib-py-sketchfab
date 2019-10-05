@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+
+import argparse
+import sketchfab as sf
+
+parser = argparse.ArgumentParser(description=f'Sketchfab v{sf.VERSION})')
+parser.add_argument('command', metavar='command', help='Command to use')
+parser.add_argument('--collection', '-c', help='Collection to use')
+parser.add_argument('--model', '-m', help='Model to use')
+args = parser.parse_args()
+
+if args.command == 'list_collections':
+    sfc = sf.Client()
+    print("Collections are:")
+    for c in sfc.collections():
+        print("-", c.name)

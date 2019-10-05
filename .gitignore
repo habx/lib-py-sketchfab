@@ -1,0 +1,6 @@
+.idea/
+venv/
+dist/
+build/
+html/
+sketchfab.egg-info/
