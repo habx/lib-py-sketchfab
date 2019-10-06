@@ -5,10 +5,11 @@ Install the module:
 ```sh
 pip3 install sketchfab
 ```
-This code lets you download all your models with their directory
+This code creates a directory for each of your collection and places all models inside it.
 ```python
 import os
 import sketchfab
+
 sfc = sketchfab.Client('YOUR-API-KEY')
 for c in sfc.collections():
     print("Collection:", c)
@@ -59,13 +60,14 @@ Collection: Collection{housing-updates}
 - The API is designed to be as simple as possible to use
 
 ## Known issues
-- The code might not be the best. I'm definitely interested by any feedback you can provide me on that.
+- The code might not be the most elegant. I'm definitely interested by any feedback you can provide me on that.
 - The official swagger-based documentation is not respecting the API behavior. As such you might find that:
   - The library enforces some strange rules (like passing a model when creating a model)
   - The library doesn't properly use the API (like listing the models of a collection through search)
 
   In both case it was by trial and error that I discovered how to use the API. If you find better ways to do
   it I'm interested.
+- The listing doesn't work with long lists (it needs to be re-implemented as an iterable calling the listing API)
 - The CLI is pretty much useless at this stage
 
 ## Missing APIs

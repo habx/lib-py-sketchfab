@@ -29,8 +29,16 @@ setup(
         "Topic :: Multimedia :: Graphics :: 3D Modeling",
         "Topic :: Multimedia :: Graphics :: 3D Rendering"
     ],
+    keywords='sketchfab 3d-model client-library development',
     packages=["sketchfab"],
     scripts=["scripts/sketchfab"],
     python_requires=">=3.7",
-    install_requires=["requests==2.22.0"],
+    install_requires=["requests==2.22.0", "urllib3"],
+    extras_require={
+        'dev': ['pdoc3'],
+    },
+    project_urls={  # Optional
+        'Bug Reports': 'https://github.com/habx/lib-py-sketchfab/issues',
+        'Source': 'https://github.com/habx/lib-py-sketchfab',
+    },
 )
