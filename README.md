@@ -54,7 +54,7 @@ Collection: Collection{housing-updates}
 
 ## Why
 - I couldn't find one
-- The [sample codes from sketchfab website](https://sketchfab.com/developers/data-api/v3/python) are pretty much unuseable
+- The [sample codes from the sketchfab website](https://sketchfab.com/developers/data-api/v3/python) are pretty much unuseable
 
 ## Choices
 - The API is designed to be as simple as possible to use

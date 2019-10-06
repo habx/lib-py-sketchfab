@@ -43,7 +43,12 @@ class SFClient:
 
         s = requests.Session()
         s.auth = SFCltAuth(api_token)
-        retries = Retry(total=30, backoff_factor=0.5, status_forcelist=[429, 502, 503, 504])
+        retries = Retry(
+            total=30,
+            backoff_factor=0.5,
+            method_whitelist=["HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"],  # adding POST
+            status_forcelist=[429, 502, 503, 504],  # Adding 429
+        )
         s.mount('https://', HTTPAdapter(max_retries=retries))
         self._session = s
 
