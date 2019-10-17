@@ -18,6 +18,10 @@ class SFModel:
         """name of the model"""
         return self.json.get('name')
 
+    @name.setter
+    def name(self, value):
+        self.json['name'] = value
+
     @property
     def uid(self) -> str:
         """uid of the model"""
@@ -46,6 +50,10 @@ class SFModel:
         """Download a model as a directory"""
         from sketchfab.api import SFModelsApi
         return SFModelsApi.download_to_dir(self.clt, self)
+
+    def update(self, name: str):
+        from sketchfab.api import SFModelsApi
+        return SFModelsApi.update_model(self.clt, self, name=name)
 
     def __str__(self) -> str:
         return f'Model{{{self.name}}}'

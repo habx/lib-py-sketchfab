@@ -46,14 +46,14 @@ class SFClient:
         retries = Retry(
             total=30,
             backoff_factor=0.5,
-            method_whitelist=["HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"],  # adding POST
+            method_whitelist=["HEAD", "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],  # adding POST
             status_forcelist=[429, 502, 503, 504],  # Adding 429
         )
         s.mount('https://', HTTPAdapter(max_retries=retries))
         self._session = s
 
     @property
-    def session(self):
+    def session(self) -> requests.Session:
         return self._session
 
     def models(self, sort_by: str = '-created_at', downloadable: bool = None, published: bool = None) -> List[SFModel]:
@@ -69,8 +69,14 @@ class SFClient:
     def create_collection(self, name: str, models: List[SFModel]) -> SFCollection:
         return SFCollectionsApi.create(self, name, models)
 
-    def get_collection(self, name: str) -> Optional[SFCollection]:
+    def get_collection_by_name(self, name: str) -> Optional[SFCollection]:
         for c in self.collections():
             if c.name == name:
                 return c
         return None
+
+    def get_model(self, uid: str) -> Optional[SFModel]:
+        return SFModelsApi.get_model(self, uid)
+
+    def upload_model(self, file_path: str, private: bool) -> Optional[SFModel]:
+        return SFModelsApi.upload_model(self, file_path, private)

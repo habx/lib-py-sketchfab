@@ -13,7 +13,7 @@ class SketchFabTest(unittest.TestCase):
             model = models[0]
             # List your collections, create one if you don't have any
             collection_name = 'test collection'
-            collection = client.get_collection(collection_name)
+            collection = client.get_collection_by_name(collection_name)
             if not collection:
                 collection = client.create_collection(collection_name, [model])
             print('Model:', model.viewer_url)
@@ -34,15 +34,15 @@ class SketchFabTest(unittest.TestCase):
     @staticmethod
     def test_listing_collection_models():
         clt = SFClient()
-        coll_models = clt.get_collection('housing-models')
+        coll_models = clt.get_collection_by_name('housing-models')
         models = coll_models.models()
         assert len(models) > 0
 
     @staticmethod
     def test_download_updates():
         clt = SFClient()
-        coll_updates = clt.get_collection('housing-updates')
-        coll_models = clt.get_collection('housing-models')
+        coll_updates = clt.get_collection_by_name('housing-updates')
+        coll_models = clt.get_collection_by_name('housing-models')
         if not coll_updates or not coll_models:
             print("Some collections are missing !")
             return

@@ -5,6 +5,13 @@ Install the module:
 ```sh
 pip3 install sketchfab
 ```
+
+### Using the CLI
+```sh
+SKETCHFAB_API_TOKEN=XXXX sketchfab upload -f my_file.zip
+```
+
+### Using the lib
 This code creates a directory for each of your collection and places all models inside it.
 ```python
 import os

@@ -2,15 +2,42 @@
 
 import argparse
 import sketchfab as sf
+import logging
 
-parser = argparse.ArgumentParser(description=f'Sketchfab v{sf.VERSION})')
-parser.add_argument('command', metavar='command', help='Command to use')
-parser.add_argument('--collection', '-c', help='Collection to use')
-parser.add_argument('--model', '-m', help='Model to use')
+parser = argparse.ArgumentParser(description=f'Sketchfab v{sf.VERSION}')
+subparsers = parser.add_subparsers(dest='command', required=True, help='Command to use')
+
+# Collections listing
+parser_list_collections = subparsers.add_parser('list_collections')
+
+# Upload
+parser_upload = subparsers.add_parser('upload')
+parser_upload.add_argument('-f', '--file', required=True, help='File to upload')
+parser_upload.add_argument('-p', '--public', action='store_true', default=False, help='Publicly accessible')
 args = parser.parse_args()
 
-if args.command == 'list_collections':
-    sfc = sf.Client()
+
+logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
+
+sfc = sf.Client()
+
+
+def app_list_collections(a):
     print("Collections are:")
     for c in sfc.collections():
         print("-", c.name)
+
+
+def app_upload(a):
+    logging.info("Uploading...")
+    model = sfc.upload_model(a.file, not args.public)
+    if model:
+        logging.info("Done ! uid = %s", model.uid)
+    else:
+        logging.info("Failed !")
+
+
+if args.command == 'list_collections':
+    app_list_collections(args)
+elif args.command == 'upload':
+    app_upload(args)
