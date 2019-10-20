@@ -59,6 +59,16 @@ Collection: Collection{housing-updates}
 
 ```
 
+### Using docker
+```
+$ docker run -e SKETCHFAB_API_TOKEN=XXXXX -ti habx/sketchfab list_collections
+Collections are:
+2019-10-20 21:12:24,417 Starting new HTTPS connection (1): api.sketchfab.com:443
+2019-10-20 21:12:24,762 https://api.sketchfab.com:443 "GET /v3/me/collections HTTP/1.1" 200 None
+- Collection 1
+- Collection 2
+```
+
 ## Why
 - I couldn't find one
 - The [sample codes from the sketchfab website](https://sketchfab.com/developers/data-api/v3/python) are pretty much unuseable
