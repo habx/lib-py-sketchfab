@@ -78,5 +78,5 @@ class SFClient:
     def get_model(self, uid: str) -> Optional[SFModel]:
         return SFModelsApi.get_model(self, uid)
 
-    def upload_model(self, file_path: str, private: bool) -> Optional[SFModel]:
-        return SFModelsApi.upload_model(self, file_path, private)
+    def upload_model(self, file_path: str, model: SFModel) -> Optional[SFModel]:
+        return SFModelsApi.upload_model(self, file_path, model)

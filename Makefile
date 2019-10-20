@@ -26,3 +26,9 @@ clean:
 
 publish: package
 	twine upload dist/*
+
+docker:
+	docker rmi -f sketchfab ; docker build . -t sketchfab
+
+run:
+	alias sketchfab="$(shell pwd)/scripts/sketchfab" && PYTHONPATH=$(shell pwd) ${SHELL}

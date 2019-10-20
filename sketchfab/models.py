@@ -1,7 +1,7 @@
 """
 Sketchfab models
 """
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Union
 
 
 class SFModel:
@@ -11,7 +11,13 @@ class SFModel:
 
     def __init__(self, j: Dict[str, Any] = None, clt: 'SketchFabClient' = None):
         self.json = j if j else {}
+        self.modified = []
         self.clt = clt
+
+    def set_property(self, name: str, value: Union[str, bool]):
+        if name not in self.modified:
+            self.modified.append(name)
+        self.json[name] = value
 
     @property
     def name(self) -> str:
@@ -20,7 +26,7 @@ class SFModel:
 
     @name.setter
     def name(self, value):
-        self.json['name'] = value
+        self.set_property('name', value)
 
     @property
     def uid(self) -> str:
@@ -35,6 +41,14 @@ class SFModel:
     @property
     def is_published(self) -> bool:
         return self.json.get('publishedAt') is not None
+
+    @property
+    def private(self) -> bool:
+        return self.json.get('private')
+
+    @private.setter
+    def private(self, value: bool):
+        self.json['private'] = value
 
     def comment(self, msg: str):
         """Add a comment to a model"""
@@ -51,9 +65,9 @@ class SFModel:
         from sketchfab.api import SFModelsApi
         return SFModelsApi.download_to_dir(self.clt, self)
 
-    def update(self, name: str):
+    def update(self):
         from sketchfab.api import SFModelsApi
-        return SFModelsApi.update_model(self.clt, self, name=name)
+        return SFModelsApi.update_model(self.clt, self)
 
     def __str__(self) -> str:
         return f'Model{{{self.name}}}'

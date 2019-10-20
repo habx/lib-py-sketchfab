@@ -36,32 +36,33 @@ class SFModelsApi:
 
         return ok
 
+    UPDATABLE_PROPERTIES: List[str] = ['name', 'isInspectable', 'isPublished', 'description', 'private']
+
+    @staticmethod
+    def _prepare_update_data(model: SFModel) -> Dict[str, Union[str, bool]]:
+        data = {}
+        for prop_name in model.modified:
+            value = model.json[prop_name]
+            if prop_name in SFModelsApi.UPDATABLE_PROPERTIES:
+                data[prop_name] = value
+            # Some more specific logic might appear later
+        return data
+
     @staticmethod
     def update_model(
             clt: 'SketchFabClient',
             model: SFModel,
-
-            # We should turn it into a class that can be re-used at creation and update
-            name: str = None,
-            is_inspectable: bool = None,
-            is_published: bool = None,
-            description: str = None,
     ) -> bool:
-        data = {}
-        if name:
-            data['name'] = name
-        if is_inspectable is not None:
-            data['isInspectable'] = True
-        if is_published is not None:
-            data['isPublished'] = True
-        if description is not None:
-            data['description'] = description
+
+        data = SFModelsApi._prepare_update_data(model)
 
         r = clt.session.patch(
             f'{API_URL}/models/{model.uid}',
-            input=data,
+            data=data,
         )
-        return r.status_code == 204
+        model.modified = []
+        ok = r.status_code == 204
+        return ok
 
     @staticmethod
     def get_model(clt: 'SketchFabClient', uid: str) -> Optional[SFModel]:
@@ -69,7 +70,8 @@ class SFModelsApi:
             f'{API_URL}/models/{uid}'
         )
         if r.status_code == 200:
-            return SFModel(r.json, clt)
+            j = json.loads(r.content)
+            return SFModel(j, clt)
         else:
             return None
 
@@ -130,18 +132,9 @@ class SFModelsApi:
         return [SFModel(m, clt) for m in data['results']]
 
     @staticmethod
-    def _prepare_model_params(model: SFModel) -> Dict[str, Union[str, bool]]:
-        params = {}
-        if model.name:
-            params['name'] = model.name
-
-        return params
-
-    @staticmethod
     def upload_model(
             clt: 'SketchFabClient',
             file_path: str,
-            private=True,
             model: SFModel = None
     ) -> Optional[SFModel]:
         """
@@ -155,9 +148,7 @@ class SFModelsApi:
         if not model:
             model = SFModel()
 
-        params = SFModelsApi._prepare_model_params(model)
-        if private:
-            params['private'] = private
+        params = SFModelsApi._prepare_update_data(model)
 
         with open(file_path, 'rb') as f:
             r = clt.session.post(
@@ -170,6 +161,7 @@ class SFModelsApi:
             if r.status_code == 201:
                 j = json.loads(r.content)
                 model.json['uid'] = j['uid']
+                model.modified = []
                 return model
             else:
                 return None

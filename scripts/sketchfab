@@ -4,16 +4,28 @@ import argparse
 import sketchfab as sf
 import logging
 
+from sketchfab.models import SFModel
+
 parser = argparse.ArgumentParser(description=f'Sketchfab v{sf.VERSION}')
 subparsers = parser.add_subparsers(dest='command', required=True, help='Command to use')
 
 # Collections listing
 parser_list_collections = subparsers.add_parser('list_collections')
 
+# Models listing
+parser_list_models = subparsers.add_parser('list_models')
+
+# Model update
+parser_model_update = subparsers.add_parser('update_model')
+parser_model_update.add_argument('-u', '--uid', required=True, help='Model UID to update')
+parser_model_update.add_argument('-n', '--name', help='Name to set for the model')
+
+
 # Upload
-parser_upload = subparsers.add_parser('upload')
-parser_upload.add_argument('-f', '--file', required=True, help='File to upload')
-parser_upload.add_argument('-p', '--public', action='store_true', default=False, help='Publicly accessible')
+parser_model_upload = subparsers.add_parser('upload')
+parser_model_upload.add_argument('-f', '--file', required=True, help='File to upload')
+parser_model_upload.add_argument('-n', '--name', help='Name of the model')
+parser_model_upload.add_argument('-p', '--public', action='store_true', default=False, help='Publicly accessible')
 args = parser.parse_args()
 
 
@@ -22,22 +34,49 @@ logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
 sfc = sf.Client()
 
 
-def app_list_collections(a):
-    print("Collections are:")
+def app_list_collections():
+    print("Collections:")
     for c in sfc.collections():
-        print("-", c.name)
+        print(f"- {c.name} ({c.uid})")
 
 
-def app_upload(a):
+def app_list_models():
+    print("Models:")
+    for m in sfc.models():
+        print(f"- {m.name} ({m.uid})")
+
+
+def app_upload():
     logging.info("Uploading...")
-    model = sfc.upload_model(a.file, not args.public)
+    model = SFModel()
+    model.private = args.public is not True
+    if args.name:
+        model.name = args.name
+    sfc.upload_model(args.file, model)
     if model:
         logging.info("Done ! uid = %s", model.uid)
     else:
         logging.info("Failed !")
 
 
+def app_model_update():
+    model = sfc.get_model(args.uid)
+    if not model:
+        print("Couldn't fetch the model", args.uid)
+        return
+    if args.name:
+        model.name = args.name
+    if model.update():
+        print("Update successful !")
+    else:
+        print("Update failed !")
+
+
 if args.command == 'list_collections':
-    app_list_collections(args)
+    app_list_collections()
+elif args.command == 'list_models':
+    app_list_models()
 elif args.command == 'upload':
-    app_upload(args)
+    app_upload()
+elif args.command == 'update_model':
+    app_model_update()
