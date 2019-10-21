@@ -18,20 +18,35 @@ parser_list_models = subparsers.add_parser('list_models')
 # Model update
 parser_model_update = subparsers.add_parser('update_model')
 parser_model_update.add_argument('-u', '--uid', required=True, help='Model UID to update')
-parser_model_update.add_argument('-n', '--name', help='Name to set for the model')
-
 
 # Upload
 parser_model_upload = subparsers.add_parser('upload')
 parser_model_upload.add_argument('-f', '--file', required=True, help='File to upload')
-parser_model_upload.add_argument('-n', '--name', help='Name of the model')
-parser_model_upload.add_argument('-p', '--public', action='store_true', default=False, help='Publicly accessible')
+
+# Shared between upload and update
+for p in parser_model_update, parser_model_upload:
+    p.add_argument('-n', '--name', help='Name to set for the model')
+    p.add_argument('-p', '--public', choices=('true', 'false'), help='Publicly accessible')
+    p.add_argument('-os', '--opt-shading', choices=('shadeless', 'lit'), help='Switch to shadeless')
+
+
 args = parser.parse_args()
 
 
 logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
 
 sfc = sf.Client()
+
+
+def parse_model_args(a: argparse.Namespace, model: SFModel):
+    if a.opt_shading:
+        model.options.shading = 'shadeless'
+
+    if a.name:
+        model.name = args.name
+
+    if a.public is not None:
+        model.private = a.public == 'true'
 
 
 def app_list_collections():
@@ -49,9 +64,9 @@ def app_list_models():
 def app_upload():
     logging.info("Uploading...")
     model = SFModel()
-    model.private = args.public is not True
-    if args.name:
-        model.name = args.name
+    if args.public is not None:
+        args.public = False
+    parse_model_args(args, model)
     sfc.upload_model(args.file, model)
     if model:
         logging.info("Done ! uid = %s", model.uid)
@@ -64,8 +79,7 @@ def app_model_update():
     if not model:
         print("Couldn't fetch the model", args.uid)
         return
-    if args.name:
-        model.name = args.name
+    parse_model_args(args, model)
     if model.update():
         print("Update successful !")
     else:
