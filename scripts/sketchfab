@@ -6,6 +6,9 @@ import logging
 
 from sketchfab.models import SFModel
 
+
+logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
+
 parser = argparse.ArgumentParser(description=f'Sketchfab v{sf.VERSION}')
 subparsers = parser.add_subparsers(dest='command', required=True, help='Command to use')
 
@@ -31,9 +34,6 @@ for p in parser_model_update, parser_model_upload:
 
 
 args = parser.parse_args()
-
-
-logging.basicConfig(format='%(asctime)-15s %(message)s', level=logging.DEBUG)
 
 sfc = sf.Client()
 
