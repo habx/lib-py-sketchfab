@@ -43,7 +43,9 @@ class SFModelsApi:
         data = {}
         for prop_name in model.modified:
             value = model.json[prop_name]
-            if prop_name in SFModelsApi.UPDATABLE_PROPERTIES:
+            if prop_name == 'options':
+                data[prop_name] = json.dumps(value)
+            elif prop_name in SFModelsApi.UPDATABLE_PROPERTIES:
                 data[prop_name] = value
             # Some more specific logic might appear later
         return data
@@ -142,7 +144,6 @@ class SFModelsApi:
         :param clt: Client
         :param file_path: File to upload
         :param model: Optional model description
-        :param private: If the model should be private (activated by default)
         :return: The model
         """
         if not model:
@@ -156,15 +157,14 @@ class SFModelsApi:
                 data=params,
                 files={'modelFile': f}
             )
-            if r.status_code == 400:
-                logging.warning("Error: %s", r.content)
             if r.status_code == 201:
                 j = json.loads(r.content)
                 model.json['uid'] = j['uid']
                 model.modified = []
                 return model
-            else:
-                return None
+            elif r.status_code == 400:
+                logging.warning("Error: %s", r.content)
+            return None
 
     @staticmethod
     def download(clt: 'SketchFabClient', model: SFModel) -> str:
@@ -196,7 +196,7 @@ class SFCollectionsApi:
     """Collections management API"""
 
     @staticmethod
-    def list(clt: 'SketchFabClient'):
+    def list(clt: 'SketchFabClient') -> List[SFCollection]:
         req = clt.session.get(f'{API_URL}/me/collections')
         data = req.json()
         return [SFCollection(m, clt) for m in data['results']]
@@ -212,6 +212,29 @@ class SFCollectionsApi:
         )
         r = requests.get(r.headers['Location'])
         return SFCollection(r.json())
+
+    UPDATABLE_PROPERTIES: List[str] = ['name']
+
+    @staticmethod
+    def _prepare_update_data(collection: SFCollection) -> Dict[str, Union[str, bool]]:
+        data = {}
+        for prop_name in collection.modified:
+            value = collection.json[prop_name]
+            if prop_name in SFModelsApi.UPDATABLE_PROPERTIES:
+                data[prop_name] = value
+            # Some more specific logic might appear later
+        return data
+
+    @staticmethod
+    def update(clt, collection: SFCollection) -> bool:
+        r = clt.session.patch(
+            f'{API_URL}/collections/{collection.uid}',
+            data=SFCollectionsApi._prepare_update_data(collection),
+        )
+        ok = r.status_code / 100 == 2
+        if not ok:
+            logging.warning("Failed to update collection: %s", r.content)
+        return ok
 
     @staticmethod
     def add_model(clt, collection: SFCollection, model: SFModel) -> bool:
@@ -240,7 +263,7 @@ class SFCollectionsApi:
         return ok
 
     @staticmethod
-    def list_models(clt: 'SketchFabClient', collection: SFCollection):
+    def list_models(clt: 'SketchFabClient', collection: SFCollection) -> List[SFModel]:
         return SFModelsApi.list_mines(clt, collection=collection)
 
     @staticmethod

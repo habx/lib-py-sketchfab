@@ -4,6 +4,27 @@ Sketchfab models
 from typing import Dict, Any, List, Union
 
 
+class SFModelOptions:
+    def __init__(self, parent: 'SFModel'):
+        self.parent = parent
+        self.json = parent.json.get('options')
+        if not self.json:
+            self.json = {}
+
+    @property
+    def shading(self) -> str:
+        return self.json.get('shading', 'lit')
+
+    @shading.setter
+    def shading(self, value: str):
+        assert value in 'shadeless', 'lit'
+        self.set_property('shading', value)
+
+    def set_property(self, name: str, value: Any):
+        self.json[name] = value
+        self.parent.set_property('options', self.json)
+
+
 class SFModel:
     """
     [3D Model](https://docs.sketchfab.com/data-api/v3/index.html#/models)
@@ -11,10 +32,10 @@ class SFModel:
 
     def __init__(self, j: Dict[str, Any] = None, clt: 'SketchFabClient' = None):
         self.json = j if j else {}
-        self.modified = []
+        self.modified: List[str] = []
         self.clt = clt
 
-    def set_property(self, name: str, value: Union[str, bool]):
+    def set_property(self, name: str, value: Any):
         if name not in self.modified:
             self.modified.append(name)
         self.json[name] = value
@@ -50,6 +71,10 @@ class SFModel:
     def private(self, value: bool):
         self.json['private'] = value
 
+    @property
+    def options(self) -> SFModelOptions:
+        return SFModelOptions(self)
+
     def comment(self, msg: str):
         """Add a comment to a model"""
         from sketchfab.api import SFModelsApi
@@ -65,7 +90,8 @@ class SFModel:
         from sketchfab.api import SFModelsApi
         return SFModelsApi.download_to_dir(self.clt, self)
 
-    def update(self):
+    def update(self) -> bool:
+        """Update a model"""
         from sketchfab.api import SFModelsApi
         return SFModelsApi.update_model(self.clt, self)
 
@@ -80,6 +106,7 @@ class SFCollection:
 
     def __init__(self, j: Dict[str, Any] = None, clt: 'SketchFabClient' = None):
         self.json = j if j else {}
+        self.modified: List[str] = []
         self.clt = clt
 
     @property
@@ -118,6 +145,11 @@ class SFCollection:
         """Remove a model from a collection"""
         from sketchfab.api import SFCollectionsApi
         return SFCollectionsApi.remove_model(self.clt, self, model)
+
+    def update(self) -> bool:
+        """Update the collection"""
+        from sketchfab.api import SFCollectionsApi
+        return SFCollectionsApi.update(self.clt, self)
 
     def __str__(self) -> str:
         return f'Collection{{{self.name}}}'
