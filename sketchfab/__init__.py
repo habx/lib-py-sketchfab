@@ -3,7 +3,7 @@ Python client API providing an easy way to manage you models on sketchfab.
 """
 import sketchfab.clt
 
-VERSION = "0.0.7"
+VERSION = "0.0.8"
 """Current version of the lib"""
 
 Client = clt.SFClient

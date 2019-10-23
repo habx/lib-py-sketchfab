@@ -2,12 +2,16 @@ MAKEFLAGS += --no-builtin-rules
 MAKEFLAGS += --no-builtin-variables
 
 PY_FILES:=$(shell ls sketchfab/*.py scripts/sketchfab)
-PACKAGE_FILES:=$(shell find dist/)
+PACKAGE_FILES:=build dist
+#$(shell find dist/)
 
 all: package doc
 
-doc:
+doc: html
+
+html: $(PY_FILES) README.md
 	pdoc3 --html --force sketchfab
+	touch html
 
 doc-server:
 	pdoc3 --http localhost:8080 sketchfab

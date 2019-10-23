@@ -7,7 +7,7 @@ import logging
 import os
 import tempfile
 import zipfile
-from typing import List, Dict, Any, Union, Optional
+from typing import List, Dict, Union, Optional
 
 import requests
 
@@ -38,7 +38,7 @@ class SFModelsApi:
         return ok
 
     UPDATABLE_PROPERTIES: List[str] = ['name', 'description', 'isInspectable', 'isPublished', 'private']
-    UPDATABLE_PROPERTIES_JSON: List[str] = ['tags', 'categories']
+    UPDATABLE_PROPERTIES_JSON: List[str] = ['options', 'tags', 'categories']
 
     @staticmethod
     def _prepare_update_data(model: SFModel) -> Dict[str, Union[str, bool]]:
