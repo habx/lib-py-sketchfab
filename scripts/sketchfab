@@ -29,6 +29,8 @@ parser_model_upload.add_argument('-f', '--file', required=True, help='File to up
 # Shared between upload and update
 for p in parser_model_update, parser_model_upload:
     p.add_argument('-n', '--name', help='Name to set for the model')
+    p.add_argument('-d', '--description', help='Description of the model')
+    p.add_argument('-t', '--tags', help='Tags to set', nargs='+')
     p.add_argument('-p', '--public', choices=('true', 'false'), help='Publicly accessible')
     p.add_argument('-os', '--opt-shading', choices=('shadeless', 'lit'), help='Switch to shadeless')
 
@@ -44,6 +46,12 @@ def parse_model_args(a: argparse.Namespace, model: SFModel):
 
     if a.name:
         model.name = args.name
+
+    if a.description:
+        model.description = args.description
+
+    if a.tags:
+        model.tags = args.tags
 
     if a.public is not None:
         model.private = a.public == 'true'
@@ -67,11 +75,11 @@ def app_upload():
     if args.public is not None:
         args.public = False
     parse_model_args(args, model)
-    sfc.upload_model(args.file, model)
+    model = sfc.upload_model(args.file, model)
     if model:
         logging.info("Done ! uid = %s", model.uid)
     else:
-        logging.info("Failed !")
+        logging.warning("Failed !")
 
 
 def app_model_update():

@@ -46,8 +46,32 @@ class SFModel:
         return self.json.get('name')
 
     @name.setter
-    def name(self, value):
+    def name(self, value: str):
         self.set_property('name', value)
+
+    @property
+    def description(self) -> str:
+        return self.json.get('description')
+
+    @description.setter
+    def description(self, value: str):
+        self.set_property('description', value)
+
+    @property
+    def tags(self) -> List[str]:
+        return self.json.get('tags')
+
+    @tags.setter
+    def tags(self, value: List[str]):
+        self.set_property('tags', value)
+
+    @property
+    def categories(self) -> List[str]:
+        return self.json.get('categories')
+
+    @categories.setter
+    def categories(self, value: List[str]):
+        self.set_property('categories', value)
 
     @property
     def uid(self) -> str:

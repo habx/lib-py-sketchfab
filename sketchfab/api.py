@@ -29,6 +29,7 @@ class SFModelsApi:
             f'{API_URL}/comments',
             data={'model': model.uid, 'body': msg},
         )
+        r.raise_for_status()
         ok = r.status_code == 201
 
         if not ok:
@@ -36,17 +37,18 @@ class SFModelsApi:
 
         return ok
 
-    UPDATABLE_PROPERTIES: List[str] = ['name', 'isInspectable', 'isPublished', 'description', 'private']
+    UPDATABLE_PROPERTIES: List[str] = ['name', 'description', 'isInspectable', 'isPublished', 'private']
+    UPDATABLE_PROPERTIES_JSON: List[str] = ['tags', 'categories']
 
     @staticmethod
     def _prepare_update_data(model: SFModel) -> Dict[str, Union[str, bool]]:
         data = {}
         for prop_name in model.modified:
             value = model.json[prop_name]
-            if prop_name == 'options':
-                data[prop_name] = json.dumps(value)
-            elif prop_name in SFModelsApi.UPDATABLE_PROPERTIES:
+            if prop_name in SFModelsApi.UPDATABLE_PROPERTIES:
                 data[prop_name] = value
+            elif prop_name in SFModelsApi.UPDATABLE_PROPERTIES_JSON:
+                data[prop_name] = json.dumps(value)
             # Some more specific logic might appear later
         return data
 
@@ -111,7 +113,9 @@ class SFModelsApi:
         )
         req = requests.PreparedRequest()
         req.prepare_url(f'{API_URL}/search', params)
-        data = clt.session.get(req.url).json()
+        r = clt.session.get(req.url)
+        r.raise_for_status()
+        data = r.json()
         return [SFModel(m, clt) for m in data['results']]
 
     @staticmethod
@@ -130,7 +134,9 @@ class SFModelsApi:
         )
         req = requests.PreparedRequest()
         req.prepare_url(f'{API_URL}/me/search', params)
-        data = clt.session.get(req.url).json()
+        r = clt.session.get(req.url)
+        r.raise_for_status()
+        data = r.json()
         return [SFModel(m, clt) for m in data['results']]
 
     @staticmethod
@@ -157,13 +163,12 @@ class SFModelsApi:
                 data=params,
                 files={'modelFile': f}
             )
+            r.raise_for_status()
             if r.status_code == 201:
                 j = json.loads(r.content)
                 model.json['uid'] = j['uid']
                 model.modified = []
                 return model
-            elif r.status_code == 400:
-                logging.warning("Error: %s", r.content)
             return None
 
     @staticmethod
@@ -197,8 +202,9 @@ class SFCollectionsApi:
 
     @staticmethod
     def list(clt: 'SketchFabClient') -> List[SFCollection]:
-        req = clt.session.get(f'{API_URL}/me/collections')
-        data = req.json()
+        r = clt.session.get(f'{API_URL}/me/collections')
+        r.raise_for_status()
+        data = r.json()
         return [SFCollection(m, clt) for m in data['results']]
 
     @staticmethod
@@ -210,6 +216,7 @@ class SFCollectionsApi:
                 'models': [m.uid for m in models]
             },
         )
+        r.raise_for_status()
         r = requests.get(r.headers['Location'])
         return SFCollection(r.json())
 
