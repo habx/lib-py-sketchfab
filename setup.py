@@ -33,7 +33,7 @@ setup(
     packages=["sketchfab"],
     scripts=["scripts/sketchfab"],
     python_requires=">=3.7",
-    install_requires=["requests==2.22.0", "urllib3"],
+    install_requires=["requests==2.23.0", "urllib3"],
     extras_require={
         'dev': ['pdoc3'],
     },
