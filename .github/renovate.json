@@ -1,0 +1,38 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "encrypted": {
+    "gemfuryReadToken": "v/yRK+A8t2a1wyJYy/ke8ys0f0lFpq9+IHu8z7s93Oe6t6ayW2KBCJcThJ0oVBbBHnVWFqT6yA+oxiyz8qDna39Ki2Ov3NBZliEsXv91+1flIy+adxlKClpGuzb6422/jnknoceN8cg+rWbV+6yLXNF3LiK2RCb+OKfZF5Uy5o9UeL/lb1rlpG60YITVV3IRzL6T4l4djYy0rZf/lqvo8zyDzFx1Ih86obfR14f3iTT/GAL5xm436xsdhuPNljtaJKD7fSx9h6IyEgLtl38yS4lIOqpBPLrfal69R/Tenezc+TuSmMm1S1k0i+Ovzi5mn/T1EaxZSrLYM+3roQLVlA=="
+  },
+  "python": {
+    "registryUrls": [
+      "https://${GEMFURY_READ_TOKEN}@pypi.fury.io/habxtech/",
+      "https://pypi.org/simple/"
+    ]
+  },
+  "masterIssue": true,
+  "rangeStrategy": "bump",
+  "prConcurrentLimit": 3,
+  "prHourlyLimit": 5,
+  "enabledManagers": [
+    "pip"
+  ],
+  "packageRules": [
+    {
+      "updateTypes": [
+        "minor",
+        "patch"
+      ],
+      "depTypeList": [
+        "dependencies",
+        "devDependencies"
+      ],
+      "automerge": true,
+      "labels": [
+        "habx-automerge"
+      ]
+    }
+  ]
+}
