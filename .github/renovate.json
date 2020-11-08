@@ -3,22 +3,34 @@
   "extends": [
     "config:base"
   ],
-  "encrypted": {
-    "gemfuryReadToken": "v/yRK+A8t2a1wyJYy/ke8ys0f0lFpq9+IHu8z7s93Oe6t6ayW2KBCJcThJ0oVBbBHnVWFqT6yA+oxiyz8qDna39Ki2Ov3NBZliEsXv91+1flIy+adxlKClpGuzb6422/jnknoceN8cg+rWbV+6yLXNF3LiK2RCb+OKfZF5Uy5o9UeL/lb1rlpG60YITVV3IRzL6T4l4djYy0rZf/lqvo8zyDzFx1Ih86obfR14f3iTT/GAL5xm436xsdhuPNljtaJKD7fSx9h6IyEgLtl38yS4lIOqpBPLrfal69R/Tenezc+TuSmMm1S1k0i+Ovzi5mn/T1EaxZSrLYM+3roQLVlA=="
-  },
+  "enabledManagers": [
+    "pip_requirements"
+  ],
   "python": {
     "registryUrls": [
-      "https://${GEMFURY_READ_TOKEN}@pypi.fury.io/habxtech/",
+      "https://pypi.fury.io/habxtech/",
       "https://pypi.org/simple/"
+    ]
+  },
+  "hostRules": [
+    {
+      "platform": "pypi",
+      "hostName": "pypi.fury.io",
+      "password": "",
+      "encrypted": {
+        "username": "UbEV/VTWqFqCLAyM9Y2o/WTTQBXyc8RmeIbOx8PfvQ2or5at/zdHANMrTaZnjTiBgXNQ/yoEJNweIZ119/aEV4Pgpa7gA5Fg5BDGZbQktqQmJUsK0sUUSJwzlw9a3tNuiY2J/wjuPcZlMlm2unRyuBBPmH8aNjP+aUIq079c06JfW+KNGnH0hbPmBJ2pLSLCb89ZaMBsiypstMqvPCP339Ovd1CuRw828hpboezvhDJZbqd9/W/p3lSYq7JnN9Tqi2/XKxgRjCT2zUglYLLZ6ReIuBce1FGj9nTPfPMdIrJVVy78Ax8yxaPGjWnZPCTRx8Zo5zJIe8rXhCjgCP007Q=="
+      }
+    }
+  ],
+  "pip_requirements": {
+    "fileMatch": [
+      "(^|/)requirements([\\w-]*).(txt|pip)$"
     ]
   },
   "masterIssue": true,
   "rangeStrategy": "bump",
   "prConcurrentLimit": 3,
   "prHourlyLimit": 5,
-  "enabledManagers": [
-    "pip"
-  ],
   "packageRules": [
     {
       "updateTypes": [
