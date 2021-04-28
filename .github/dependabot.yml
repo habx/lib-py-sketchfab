@@ -1,0 +1,21 @@
+version: 2
+registries:
+  python-index-pypi-org-443-simple:
+    type: python-index
+    url: https://pypi.org:443/simple/
+  python-index-pypi-fury-io-habxtech:
+    type: python-index
+    url: https://pypi.fury.io/habxtech/
+    token: "${{secrets.PYTHON_INDEX_PYPI_FURY_IO_HABXTECH_TOKEN}}"
+
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "06:00"
+    timezone: Europe/Paris
+  open-pull-requests-limit: 99
+  registries:
+  - python-index-pypi-org-443-simple
+  - python-index-pypi-fury-io-habxtech
